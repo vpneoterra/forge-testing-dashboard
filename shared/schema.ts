@@ -1,0 +1,150 @@
+import { pgTable, text, integer, real, boolean, timestamp, serial, jsonb } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+export const testConfigs = pgTable("test_configs", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  industry: text("industry").notNull(),
+  complexity: text("complexity").notNull(),
+  language: text("language").notNull().default("en"),
+  promptLength: text("prompt_length").notNull().default("medium"),
+  specialFeatures: text("special_features").array(),
+  templatePrompt: text("template_prompt").notNull(),
+  expectedIndustry: text("expected_industry").notNull(),
+  expectedDomain: text("expected_domain").notNull(),
+  active: boolean("active").notNull().default(true),
+  expectedDeviceType: text("expected_device_type"),
+  expectedIntent: text("expected_intent"),
+  expectedEntities: text("expected_entities").array(),
+  expectedStandards: text("expected_standards").array(),
+  expectedCpcSection: text("expected_cpc_section"),
+  expectedCpcClasses: text("expected_cpc_classes").array(),
+  expectedComplexityTier: text("expected_complexity_tier"),
+  expectedRigorLevel: text("expected_rigor_level"),
+  expectedSolverTypes: text("expected_solver_types").array(),
+  expectedKpis: text("expected_kpis").array(),
+});
+
+export const testRuns = pgTable("test_runs", {
+  id: serial("id").primaryKey(),
+  configId: integer("config_id"),
+  runAt: timestamp("run_at").notNull().defaultNow(),
+  status: text("status").notNull(),
+  prompt: text("prompt").notNull(),
+  industry: text("industry").notNull(),
+  complexity: text("complexity").notNull(),
+  language: text("language").notNull().default("en"),
+  promptLength: text("prompt_length").notNull(),
+  forgeStatus: integer("forge_status"),
+  forgeIndustry: text("forge_industry"),
+  forgeDomain: text("forge_domain"),
+  forgeConfidence: real("forge_confidence"),
+  forgePipelineStages: integer("forge_pipeline_stages"),
+  forgeStandardsCount: integer("forge_standards_count"),
+  forgeTimingMs: integer("forge_timing_ms"),
+  forgeResponse: jsonb("forge_response"),
+  claudeIndustry: text("claude_industry"),
+  claudeDomain: text("claude_domain"),
+  claudeConfidence: real("claude_confidence"),
+  claudePipelineStages: integer("claude_pipeline_stages"),
+  claudeStandardsCount: integer("claude_standards_count"),
+  claudeResponse: jsonb("claude_response"),
+  industryCorrect: boolean("industry_correct"),
+  overallScore: real("overall_score"),
+  issues: text("issues").array(),
+  improvements: text("improvements").array(),
+  scoreClassification: real("score_classification"),
+  scoreStandards: real("score_standards"),
+  scoreParameters: real("score_parameters"),
+  scoreScope: real("score_scope"),
+  scoreGapAnalysis: real("score_gap_analysis"),
+  scoreConfidence: real("score_confidence"),
+  scoreCrossStep: real("score_cross_step"),
+  scoreLatency: real("score_latency"),
+  forgeDeviceType: text("forge_device_type"),
+  forgeIntent: text("forge_intent"),
+  forgeEntities: text("forge_entities").array(),
+  forgeStandards: jsonb("forge_standards_detail"),
+  forgeCpcSections: text("forge_cpc_sections").array(),
+  forgeCpcClasses: text("forge_cpc_classes").array(),
+  forgeCpcSubclasses: text("forge_cpc_subclasses").array(),
+  forgeProjectName: text("forge_project_name"),
+  forgeComplexityTier: text("forge_complexity_tier"),
+  forgeRigorLevel: text("forge_rigor_level"),
+  forgeSolverTypes: text("forge_solver_types").array(),
+  forgeKpis: text("forge_kpis").array(),
+  forgeGaps: jsonb("forge_gaps"),
+  forgeQuestions: text("forge_questions").array(),
+  forgeConvergenceLoops: integer("forge_convergence_loops"),
+  forgeReviewGates: integer("forge_review_gates"),
+  forgeDurationMonths: integer("forge_duration_months"),
+  forgeTeamSize: integer("forge_team_size"),
+  forgeTimingStep1: integer("forge_timing_step1"),
+  forgeTimingStep2: integer("forge_timing_step2"),
+  forgeTimingStep3: integer("forge_timing_step3"),
+  step1Industry: text("step1_industry"),
+  step2Industry: text("step2_industry"),
+  step3Industry: text("step3_industry"),
+  industryDriftDetected: boolean("industry_drift_detected"),
+  domainCorrect: boolean("domain_correct"),
+  deviceTypeCorrect: boolean("device_type_correct"),
+  intentCorrect: boolean("intent_correct"),
+});
+
+export const recommendations = pgTable("recommendations", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
+  title: text("title").notNull(),
+  severity: text("severity").notNull(),
+  description: text("description").notNull(),
+  evidence: text("evidence").notNull(),
+  solution: text("solution").notNull(),
+  affectedTests: integer("affected_tests").notNull().default(0),
+  status: text("status").notNull().default("open"),
+  linkedRunIds: integer("linked_run_ids").array(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
+export const benchmarks = pgTable("benchmarks", {
+  id: serial("id").primaryKey(),
+  period: text("period").notNull(),
+  periodStart: timestamp("period_start").notNull(),
+  totalRuns: integer("total_runs").notNull(),
+  passRate: real("pass_rate").notNull(),
+  avgScore: real("avg_score").notNull(),
+  industryAccuracy: real("industry_accuracy").notNull(),
+  avgStandards: real("avg_standards").notNull(),
+  avgPipelineStages: real("avg_pipeline_stages").notNull(),
+  avgTimingMs: real("avg_timing_ms").notNull(),
+  avgForgeConfidence: real("avg_forge_confidence").notNull(),
+  claudeIndustryAccuracy: real("claude_industry_accuracy"),
+  claudeAvgStandards: real("claude_avg_standards"),
+  claudeAvgScore: real("claude_avg_score"),
+  avgScoreClassification: real("avg_score_classification"),
+  avgScoreStandards: real("avg_score_standards"),
+  avgScoreParameters: real("avg_score_parameters"),
+  avgScoreScope: real("avg_score_scope"),
+  avgScoreGapAnalysis: real("avg_score_gap_analysis"),
+  avgScoreConfidence: real("avg_score_confidence"),
+  avgScoreCrossStep: real("avg_score_cross_step"),
+  avgScoreLatency: real("avg_score_latency"),
+  domainAccuracy: real("domain_accuracy"),
+  entityRecall: real("entity_recall"),
+  standardsRelevance: real("standards_relevance"),
+});
+
+export const insertTestConfig = createInsertSchema(testConfigs).omit({ id: true });
+export const insertTestRun = createInsertSchema(testRuns).omit({ id: true });
+export const insertRecommendation = createInsertSchema(recommendations).omit({ id: true });
+export const insertBenchmark = createInsertSchema(benchmarks).omit({ id: true });
+
+export type TestConfig = typeof testConfigs.$inferSelect;
+export type InsertTestConfig = z.infer<typeof insertTestConfig>;
+export type TestRun = typeof testRuns.$inferSelect;
+export type InsertTestRun = z.infer<typeof insertTestRun>;
+export type Recommendation = typeof recommendations.$inferSelect;
+export type InsertRecommendation = z.infer<typeof insertRecommendation>;
+export type Benchmark = typeof benchmarks.$inferSelect;
+export type InsertBenchmark = z.infer<typeof insertBenchmark>;
